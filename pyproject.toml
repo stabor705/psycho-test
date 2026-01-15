@@ -1,16 +1,14 @@
 [project]
 name = "psycho-test"
 version = "0.1.0"
-description = "Add your description here"
+description = "Fictional Character Personality Quiz"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "beautifulsoup4>=4.14.3",
     "customtkinter>=5.2.0",
-    "matplotlib>=3.10.8",
     "networkx>=3.6.1",
-    "node2vec>=0.5.0",
     "numpy>=1.26.4",
     "pandas>=2.3.3",
     "scikit-learn>=1.8.0",
+    "gensim>=4.3.0",
 ]

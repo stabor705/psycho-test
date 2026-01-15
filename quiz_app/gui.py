@@ -263,7 +263,7 @@ class ResultFrame(ctk.CTkFrame):
 
         title = ctk.CTkLabel(
             result_card,
-            text="🎭 Your Matching Character 🎭",
+            text="Your Matching Character",
             font=ctk.CTkFont(size=20, weight="bold")
         )
         title.pack(pady=(30, 20))

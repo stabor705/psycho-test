@@ -1,5 +1,9 @@
 import customtkinter as ctk
 from typing import Callable
+import urllib.request
+from io import BytesIO
+from PIL import Image
+from ddgs import DDGS
 
 
 ANSWER_OPTIONS = [
@@ -248,12 +252,32 @@ class QuizFrame(ctk.CTkFrame):
 
 
 class ResultFrame(ctk.CTkFrame):
-    def __init__(self, parent, character: str, similarity: float, on_restart: Callable):
+    def __init__(self, parent, character: str, work: str, similarity: float, on_restart: Callable):
         super().__init__(parent, fg_color="transparent")
         self.on_restart = on_restart
-        self.create_widgets(character, similarity)
+        self.create_widgets(character, work, similarity)
 
-    def create_widgets(self, character: str, similarity: float):
+    def fetch_character_image(self, character: str, work: str) -> tuple[ctk.CTkImage, tuple[int, int]] | None:
+        try:
+            query = f"{character} from {work}"
+            with DDGS() as ddgs:
+                results = list(ddgs.images(query, max_results=1))
+                if results:
+                    image_url = results[0]["image"]
+                    req = urllib.request.Request(image_url, headers={"User-Agent": "Mozilla/5.0"})
+                    with urllib.request.urlopen(req, timeout=5) as response:
+                        img_data = BytesIO(response.read())
+                        img = Image.open(img_data)
+                        max_size = 250
+                        ratio = min(max_size / img.width, max_size / img.height)
+                        new_size = (int(img.width * ratio), int(img.height * ratio))
+                        img = img.resize(new_size, Image.Resampling.LANCZOS)
+                        return ctk.CTkImage(light_image=img, dark_image=img, size=new_size), new_size
+        except Exception:
+            pass
+        return None
+
+    def create_widgets(self, character: str, work: str, similarity: float):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(5, weight=1)
@@ -268,6 +292,12 @@ class ResultFrame(ctk.CTkFrame):
         )
         title.pack(pady=(30, 20))
 
+        char_image_result = self.fetch_character_image(character, work)
+        if char_image_result:
+            char_image, img_size = char_image_result
+            image_label = ctk.CTkLabel(result_card, image=char_image, text="")
+            image_label.pack(pady=(0, 15))
+
         character_label = ctk.CTkLabel(
             result_card,
             text=character,
@@ -275,6 +305,14 @@ class ResultFrame(ctk.CTkFrame):
             text_color=("#1a73e8", "#4da6ff")
         )
         character_label.pack(pady=10)
+
+        work_label = ctk.CTkLabel(
+            result_card,
+            text=f"from \"{work}\"",
+            font=ctk.CTkFont(size=16, slant="italic"),
+            text_color=("gray40", "gray60")
+        )
+        work_label.pack(pady=(0, 10))
 
         similarity_pct = int(similarity * 100)
         similarity_frame = ctk.CTkFrame(result_card, fg_color="transparent")

@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 from quiz_app.quiz_logic import (
     load_statements,
+    load_character_works,
     get_random_questions,
     find_matching_character
 )
@@ -15,10 +16,11 @@ class QuizApp:
 
         self.root = ctk.CTk()
         self.root.title("Fictional Character Quiz")
-        self.root.geometry("750x550")
-        self.root.minsize(650, 500)
+        self.root.geometry("900x750")
+        self.root.minsize(800, 650)
 
         self.statements = load_statements()
+        self.character_works = load_character_works()
         self.question_count = 10
         self.current_frame = None
         self.show_welcome()
@@ -60,9 +62,11 @@ class QuizApp:
     def show_result(self, answers: dict):
         self.clear_frame()
         character, similarity = find_matching_character(answers)
+        work = self.character_works.get(character, "Unknown")
         self.current_frame = ResultFrame(
             self.root,
             character,
+            work,
             similarity,
             self.show_welcome
         )

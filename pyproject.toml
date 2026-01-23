@@ -11,4 +11,6 @@ dependencies = [
     "pandas>=2.3.3",
     "scikit-learn>=1.8.0",
     "gensim>=4.3.0",
+    "pillow>=12.1.0",
+    "ddgs>=9.10.0",
 ]

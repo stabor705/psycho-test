@@ -9,6 +9,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 DATA_DIR = Path(__file__).parent.parent
 
 
+def load_character_works() -> dict:
+    df = pd.read_csv(DATA_DIR / "data" / "characters_works.csv")
+    return dict(zip(df["character"], df["work"]))
+
+
 def load_statements() -> dict:
     df = pd.read_csv(DATA_DIR / "personality_statements.csv")
     return dict(zip(df["id"], df["statement"]))
